@@ -223,6 +223,11 @@ namespace AutoUpdaterDotNET
         /// </summary>
         public static event ParseUpdateInfoHandler ParseUpdateInfoEvent;
 
+        public delegate void BeforeInstallingEventHandler();
+
+        public static event BeforeInstallingEventHandler BeforeInstallingEvent;
+
+
         /// <summary>
         ///     Set if you want the default update form to have a different size.
         /// </summary>
@@ -331,9 +336,9 @@ namespace AutoUpdaterDotNET
                                         return;
                                     }
                                 }
-                            }
 
-                            Running = false;
+                                Running = false;
+                            }
                         };
 
                         backgroundWorker.RunWorkerAsync(assembly);
@@ -518,6 +523,8 @@ namespace AutoUpdaterDotNET
                     }
                 }
             }
+
+            Running = false;
         }
 
         /// <summary>
@@ -635,7 +642,7 @@ namespace AutoUpdaterDotNET
         /// </summary>
         public static bool DownloadUpdate(UpdateInfoEventArgs args)
         {
-            using (var downloadDialog = new DownloadUpdateDialog(args))
+            using (var downloadDialog = new DownloadUpdateDialog(args, BeforeInstallingEvent))
             {
                 try
                 {
